@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const phrases = [
-    "El viento no pregunta cuándo es mejor mover las hojas",
-    "Al final, me habías respondido que sí",
-    "Bailamos entre risas sabiendo que no valíamos la pena sino la gloria."
+    "\"El viento no pregunta cuándo es mejor mover las hojas\"",
+    "\"Al final, me habías respondido que sí\"",
+    "\"Bailamos entre risas sabiendo que no valíamos la pena sino la gloria.\""
   ];
 
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
@@ -20,42 +20,44 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#E9D8A6] text-[#3C3C3C] flex flex-col items-center justify-center px-6 py-12">
-      <h1 className="text-4xl italic font-bold text-center mb-4">Babel</h1>
+    <div className="min-h-screen bg-[#2D4842] text-[#F4F1E1] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
+      <h1 className="text-5xl italic font-bold text-center mb-4">Babel</h1>
+
       <p className="text-lg text-center max-w-xl mb-6">
-        Una app donde la poesía se escribe entre otrxs. Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
+        Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
       </p>
 
-      <div className="italic text-center text-[#7F5539] mb-6 animate-fade">
+      <div className="italic text-center text-[#DAB89F] mb-8 animate-fade">
         <p className="transition-opacity duration-1000 ease-in-out">
           {phrases[currentPhraseIndex]}
         </p>
       </div>
 
-      <Card className="w-full max-w-md bg-[#DDBEA9] shadow-md">
+      <Card className="w-full max-w-md bg-[#F4F1E1] shadow-lg">
         <CardContent className="flex flex-col gap-4 py-6">
-          <p className="text-center font-medium">
+          <p className="text-center font-medium text-[#3C3C3C]">
             Sumate a la comunidad de poetas.
           </p>
-          <Input placeholder="Tu nombre (opcional)" className="bg-white" />
-          <Input placeholder="Tu email" className="bg-white" />
-          <Button className="bg-[#7F5539] text-white hover:bg-[#5c3f2c]">
+          <Input placeholder="Tu nombre (opcional)" className="bg-white text-black" />
+          <Input placeholder="Tu email" className="bg-white text-black" />
+          <Button className="bg-[#2D4842] text-white hover:bg-[#1c302c]">
             Quiero recibir novedades
           </Button>
         </CardContent>
       </Card>
 
-      <div className="mt-10 text-sm text-center text-[#7F5539]">
+      <div className="mt-10 text-sm text-center text-[#DAB89F]">
         Las palabras nos encuentran. Pronto, Babel también.
       </div>
 
-      <style jsx>{`
-        @keyframes float {
-          0% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-          100% { transform: translateY(0); }
-        }
+      {/* Ilustraciones de fondo */}
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+        <img src="/scribble1.png" alt="Scribble top" className="absolute top-10 left-10 w-40 opacity-10" />
+        <img src="/scribble2.png" alt="Scribble bottom" className="absolute bottom-12 right-12 w-24 opacity-10 rotate-12" />
+        <img src="/spiral-text.png" alt="Spiral text" className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-64 opacity-10" />
+      </div>
 
+      <style jsx>{`
         @keyframes fade {
           0% { opacity: 0; }
           10% { opacity: 1; }
