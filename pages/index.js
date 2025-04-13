@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const phrases = [
-    "poesía", "gesto", "escritura", "voz", "palabra"
+    "poesía", "gesto", "escritura", "voz", "palabra",
+    "ritmo", "susurro", "fragmento", "verso", "imagen",
+    "mirada", "ausencia", "latido", "deseo", "eco",
+    "presencia", "noche", "tinta", "cuerpo", "memoria"
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
@@ -12,18 +15,18 @@ export default function LandingPage() {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
       const left = Math.random() * 90 + "%";
-      const fontSize = Math.random() * 12 + 16 + "px"; // más grandes
+      const fontSize = Math.random() * 12 + 16 + "px";
       setFallingWords((words) => [
         ...words,
         { id, word, left, fontSize, top: 0, speed: Math.random() * 0.2 + 0.1 }
       ]);
-    }, 800); // palabras un poco más espaciadas
+    }, 800);
 
     const fallInterval = setInterval(() => {
       setFallingWords((words) =>
         words.map((w) => {
           const newTop = w.top + w.speed;
-          return { ...w, top: newTop > 90 ? 90 : newTop }; // acumulan al fondo
+          return { ...w, top: newTop > 90 ? 90 : newTop };
         })
       );
     }, 80);
@@ -46,10 +49,11 @@ export default function LandingPage() {
             left,
             fontSize,
             color: "#1C2B24",
-            opacity: 0.2,
+            opacity: 0.25,
             whiteSpace: "nowrap",
             pointerEvents: "none",
             zIndex: 0,
+            fontFamily: "'Special Elite', monospace"
           }}
         >
           {word}
@@ -87,7 +91,7 @@ export default function LandingPage() {
       </div>
 
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Special+Elite&display=swap');
 
         .font-serif {
           font-family: 'Playfair Display', serif;
