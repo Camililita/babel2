@@ -2,10 +2,21 @@ import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const phrases = [
+    // Español
     "poesía", "gesto", "escritura", "voz", "palabra",
     "ritmo", "susurro", "fragmento", "verso", "imagen",
     "mirada", "ausencia", "latido", "deseo", "eco",
-    "presencia", "noche", "tinta", "cuerpo", "memoria"
+    "presencia", "noche", "tinta", "cuerpo", "memoria",
+    // Inglés
+    "poetry", "gesture", "whisper", "body", "voice",
+    // Portugués
+    "palavra", "corpo", "noite", "lembrança", "ausência",
+    // Italiano
+    "scrittura", "desiderio", "verso", "notte", "voce",
+    // Japonés
+    "言葉", "詩", "記憶", "声", "夜",
+    // Chino
+    "文字", "诗歌", "身体", "回忆", "夜晚"
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
@@ -26,7 +37,7 @@ export default function LandingPage() {
       setFallingWords((words) =>
         words.map((w) => {
           const newTop = w.top + w.speed;
-          return { ...w, top: newTop > 90 ? 90 : newTop };
+          return { ...w, top: newTop > 65 ? 65 : newTop };
         })
       );
     }, 80);
@@ -49,7 +60,7 @@ export default function LandingPage() {
             left,
             fontSize,
             color: "#1C2B24",
-            opacity: 0.25,
+            opacity: 0.35,
             whiteSpace: "nowrap",
             pointerEvents: "none",
             zIndex: 0,
