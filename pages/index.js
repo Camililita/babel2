@@ -26,21 +26,21 @@ export default function LandingPage() {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
       const left = Math.random() * 90 + "%";
-      const fontSize = Math.random() * 12 + 16 + "px";
+      const fontSize = Math.random() * 12 + 18 + "px";
       setFallingWords((words) => [
         ...words,
-        { id, word, left, fontSize, top: 0, speed: Math.random() * 0.2 + 0.1 }
+        { id, word, left, fontSize, top: 0, speed: Math.random() * 0.4 + 0.2 }
       ]);
-    }, 800);
+    }, 600);
 
     const fallInterval = setInterval(() => {
       setFallingWords((words) =>
         words.map((w) => {
           const newTop = w.top + w.speed;
-          return { ...w, top: newTop > 65 ? 65 : newTop };
+          return { ...w, top: newTop > 95 ? 95 : newTop };
         })
       );
-    }, 80);
+    }, 60);
 
     return () => {
       clearInterval(interval);
@@ -60,7 +60,7 @@ export default function LandingPage() {
             left,
             fontSize,
             color: "#1C2B24",
-            opacity: 0.35,
+            opacity: 0.45,
             whiteSpace: "nowrap",
             pointerEvents: "none",
             zIndex: 0,
@@ -72,10 +72,6 @@ export default function LandingPage() {
       ))}
 
       <h1 className="text-5xl font-bold text-center mb-4 font-serif relative z-10">Babel</h1>
-
-      <p className="italic text-center text-lg max-w-xl mb-4 font-serif relative z-10">
-        "El viento no pregunta cuándo es mejor mover las hojas."
-      </p>
 
       <p className="text-center text-base max-w-md mb-6 relative z-10">
         Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
