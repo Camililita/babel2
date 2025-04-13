@@ -25,33 +25,29 @@ export default function LandingPage() {
     const interval = setInterval(() => {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
-      const left = Math.random() * 90 + "%";
-      const fontSize = Math.random() * 12 + 18 + "px";
+      const left = `${Math.random() * 100}%`;
+      const fontSize = `${Math.random() * 10 + 12}px`;
+      const row = Math.floor(Math.random() * 20);
       setFallingWords((words) => [
         ...words,
-        { id, word, left, fontSize, top: 0, speed: Math.random() * 0.4 + 0.2 }
+        {
+          id,
+          word,
+          fontSize,
+          top: 100 - row * 1.5,
+          left,
+          z: row
+        }
       ]);
-    }, 600);
+    }, 150);
 
-    const fallInterval = setInterval(() => {
-      setFallingWords((words) =>
-        words.map((w) => {
-          const newTop = w.top + w.speed;
-          return { ...w, top: newTop > 95 ? 95 : newTop };
-        })
-      );
-    }, 60);
-
-    return () => {
-      clearInterval(interval);
-      clearInterval(fallInterval);
-    };
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="min-h-screen bg-[#F9F8F4] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
-      {/* Palabras que caen y se acumulan */}
-      {fallingWords.map(({ id, word, left, fontSize, top }) => (
+      {/* Palabras acumuladas como montaña */}
+      {fallingWords.map(({ id, word, top, left, fontSize, z }) => (
         <span
           key={id}
           style={{
@@ -63,7 +59,7 @@ export default function LandingPage() {
             opacity: 0.45,
             whiteSpace: "nowrap",
             pointerEvents: "none",
-            zIndex: 0,
+            zIndex: z,
             fontFamily: "'Special Elite', monospace"
           }}
         >
