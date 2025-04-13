@@ -1,9 +1,24 @@
-import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
-import { Input } from "../components/ui/input";
-
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
 
 export default function LandingPage() {
+  const phrases = [
+    "El viento no pregunta cuándo es mejor mover las hojas",
+    "Al final, me habías respondido que sí",
+    "Bailamos entre risas sabiendo que no valíamos la pena sino la gloria."
+  ];
+
+  const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPhraseIndex((prev) => (prev + 1) % phrases.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#E9D8A6] text-[#3C3C3C] flex flex-col items-center justify-center px-6 py-12">
       <h1 className="text-4xl italic font-bold text-center mb-4">Babel</h1>
@@ -11,10 +26,10 @@ export default function LandingPage() {
         Una app donde la poesía se escribe entre otrxs. Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
       </p>
 
-      <div className="italic text-center text-[#7F5539] space-y-2 mb-6 animate-[float_4s_ease-in-out_infinite]">
-        <p>"El viento no pregunta cuándo es mejor mover las hojas"</p>
-        <p>"Al final, me habías respondido que sí"</p>
-        <p>"Bailamos entre risas sabiendo que no valíamos la pena sino la gloria."</p>
+      <div className="italic text-center text-[#7F5539] mb-6 animate-fade">
+        <p className="transition-opacity duration-1000 ease-in-out">
+          {phrases[currentPhraseIndex]}
+        </p>
       </div>
 
       <Card className="w-full max-w-md bg-[#DDBEA9] shadow-md">
@@ -39,6 +54,17 @@ export default function LandingPage() {
           0% { transform: translateY(0); }
           50% { transform: translateY(-8px); }
           100% { transform: translateY(0); }
+        }
+
+        @keyframes fade {
+          0% { opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { opacity: 0; }
+        }
+
+        .animate-fade p {
+          animation: fade 4s ease-in-out infinite;
         }
       `}</style>
     </div>
