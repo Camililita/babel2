@@ -21,9 +21,9 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[#2D4842] text-[#F4F1E1] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
-      <h1 className="text-5xl italic font-bold text-center mb-4">Babel</h1>
+      <h1 className="text-5xl italic font-bold text-center mb-6">Babel</h1>
 
-      <p className="text-lg text-center max-w-xl mb-6">
+      <p className="text-lg text-center max-w-xl mb-4">
         Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
       </p>
 
@@ -51,10 +51,9 @@ export default function LandingPage() {
       </div>
 
       {/* Ilustraciones de fondo */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <img src="/scribble1.png" alt="Scribble top" className="absolute top-10 left-10 w-40 opacity-10" />
-        <img src="/scribble2.png" alt="Scribble bottom" className="absolute bottom-12 right-12 w-24 opacity-10 rotate-12" />
-        <img src="/spiral-text.png" alt="Spiral text" className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 w-64 opacity-10" />
+      <div className="absolute inset-0 w-full h-full pointer-events-none">
+        <img src="/spiral-text.png" alt="Spiral text" className="absolute top-16 left-10 w-44 opacity-10" />
+        <img src="/scribble2.png" alt="Text silhouette" className="absolute bottom-10 right-6 w-36 opacity-10 rotate-2" />
       </div>
 
       <style jsx>{`
