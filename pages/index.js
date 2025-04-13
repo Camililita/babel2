@@ -10,22 +10,23 @@ export default function LandingPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
-      const id = Date.now();
+      const id = Date.now() + Math.random();
       const left = Math.random() * 90 + "%";
-      const fontSize = Math.random() * 12 + 12 + "px";
+      const fontSize = Math.random() * 12 + 16 + "px"; // más grandes
       setFallingWords((words) => [
         ...words,
-        { id, word, left, fontSize, top: 0 }
+        { id, word, left, fontSize, top: 0, speed: Math.random() * 0.2 + 0.1 }
       ]);
-    }, 400);
+    }, 800); // palabras un poco más espaciadas
 
     const fallInterval = setInterval(() => {
       setFallingWords((words) =>
-        words
-          .map((w) => ({ ...w, top: w.top + 2 }))
-          .filter((w) => w.top < 100)
+        words.map((w) => {
+          const newTop = w.top + w.speed;
+          return { ...w, top: newTop > 90 ? 90 : newTop }; // acumulan al fondo
+        })
       );
-    }, 100);
+    }, 80);
 
     return () => {
       clearInterval(interval);
@@ -34,8 +35,8 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#E8D2A6] text-[#1F3D36] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
-      {/* Palabras que caen */}
+    <div className="min-h-screen bg-[#F9F8F4] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
+      {/* Palabras que caen y se acumulan */}
       {fallingWords.map(({ id, word, left, fontSize, top }) => (
         <span
           key={id}
@@ -44,8 +45,8 @@ export default function LandingPage() {
             top: `${top}%`,
             left,
             fontSize,
-            color: "#1F3D36",
-            opacity: 0.1,
+            color: "#1C2B24",
+            opacity: 0.2,
             whiteSpace: "nowrap",
             pointerEvents: "none",
             zIndex: 0,
@@ -69,19 +70,19 @@ export default function LandingPage() {
         <input
           type="text"
           placeholder="Tu nombre (opcional)"
-          className="w-72 px-4 py-2 border border-[#1F3D36] rounded text-[#1F3D36] placeholder-[#1F3D36] bg-transparent"
+          className="w-72 px-4 py-2 border border-[#1C2B24] rounded text-[#1C2B24] placeholder-[#1C2B24] bg-transparent"
         />
         <input
           type="email"
           placeholder="Tu email"
-          className="w-72 px-4 py-2 border border-[#1F3D36] rounded text-[#1F3D36] placeholder-[#1F3D36] bg-transparent"
+          className="w-72 px-4 py-2 border border-[#1C2B24] rounded text-[#1C2B24] placeholder-[#1C2B24] bg-transparent"
         />
-        <button className="w-72 px-4 py-2 mt-2 rounded bg-[#1F3D36] text-[#E8D2A6] font-bold hover:bg-[#16302B]">
+        <button className="w-72 px-4 py-2 mt-2 rounded bg-[#1C2B24] text-[#F9F8F4] font-bold hover:bg-[#141E1A]">
           Quiero recibir novedades
         </button>
       </div>
 
-      <div className="mt-10 text-sm text-center text-[#1F3D36] opacity-80 relative z-10">
+      <div className="mt-10 text-sm text-center text-[#1C2B24] opacity-80 relative z-10">
         Las palabras nos encuentran. Pronto, Babel también.
       </div>
 
