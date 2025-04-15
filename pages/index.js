@@ -2,17 +2,17 @@ import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const phrases = [
-    "poesía", "gesto", "escritura", "voz", "palabra",
-    "ritmo", "susurro", "fragmento", "verso", "imagen",
-    "mirada", "ausencia", "latido", "deseo", "eco",
-    "presencia", "noche", "tinta", "cuerpo", "memoria",
-    "poetry", "gesture", "whisper", "body", "voice",
+    "poesía", "gesto", "escritura", "voz", "palabra", "ritmo", "susurro", "fragmento", "verso", "imagen",
+    "mirada", "ausencia", "latido", "deseo", "eco", "presencia", "noche", "tinta", "cuerpo", "memoria",
+    "poetry", "gesture", "whisper", "body", "voice", "word", "image", "trace",
     "palavra", "corpo", "noite", "lembrança", "ausência",
     "scrittura", "desiderio", "verso", "notte", "voce",
-    "言葉", "詩", "記憶", "声", "夜", "文字", "诗歌", "身体", "回忆", "夜晚"
+    "言葉", "詩", "記憶", "声", "夜",
+    "文字", "詩歌", "身体", "回忆", "夜晚"
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
+  const [ground, setGround] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -22,29 +22,23 @@ export default function LandingPage() {
       const fontSize = `${Math.random() * 10 + 12}px`;
       setFallingWords((words) => [
         ...words,
-        {
-          id,
-          word,
-          fontSize,
-          top: 0,
-          left,
-          speed: Math.random() * 0.3 + 0.1,
-        }
+        { id, word, fontSize, top: 0, left, speed: Math.random() * 0.3 + 0.1 }
       ]);
-    }, 250);
+    }, 150);
 
     const fallInterval = setInterval(() => {
-      setFallingWords((words) =>
-        words.map((w) => {
+      setFallingWords((words) => {
+        return words.map((w) => {
+          const maxTop = 90;
           const newTop = w.top + w.speed;
-          const stopHeight = 80 + Math.sin(parseFloat(w.left) / 5) * 10;
-          return {
-            ...w,
-            top: newTop >= stopHeight ? stopHeight : newTop
-          };
-        })
-      );
-    }, 60);
+          if (newTop >= maxTop) {
+            setGround((g) => [...g, { ...w, top: maxTop }]);
+            return null;
+          }
+          return { ...w, top: newTop };
+        }).filter(Boolean);
+      });
+    }, 50);
 
     return () => {
       clearInterval(interval);
@@ -53,8 +47,8 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FAFAF6] dark:bg-[#1C1C1C] text-[#1C2B24] dark:text-[#F9F8F4] transition-colors duration-1000 flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden font-sans">
-      {fallingWords.map(({ id, word, top, left, fontSize }) => (
+    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FAFAF6] text-[#1C2B24] dark:bg-[#1C2B24] dark:text-[#F9F8F4] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
+      {[...fallingWords, ...ground].map(({ id, word, top, left, fontSize }) => (
         <span
           key={id}
           style={{
@@ -63,48 +57,45 @@ export default function LandingPage() {
             left,
             fontSize,
             whiteSpace: "nowrap",
-            pointerEvents: "none",
-            fontFamily: "'Special Elite', monospace",
+            fontFamily: "'Special Elite', monospace"
           }}
-          className="opacity-60 transition duration-300 hover:opacity-100"
+          className="opacity-60 hover:opacity-100 transition duration-300"
         >
           {word}
         </span>
       ))}
 
-      <h1 className="text-6xl font-bold mb-4 font-serif z-10">Babel</h1>
+      <h1 className="text-5xl font-bold text-center mb-4 font-serif relative z-10">Babel</h1>
 
-      <p className="text-center text-lg max-w-xl mb-6 z-10">
-        Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real.
-        Leé desde el misterio, escribí desde el gesto.
+      <p className="text-center text-base max-w-md mb-6 relative z-10">
+        Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
       </p>
 
-      <div className="flex flex-col gap-3 items-center z-10">
+      <div className="flex flex-col gap-3 items-center relative z-10">
         <input
           type="text"
           placeholder="Tu nombre (opcional)"
-          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded bg-transparent placeholder-gray-500"
+          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded text-[#1C2B24] dark:text-[#F9F8F4] placeholder-[#1C2B24] dark:placeholder-[#F9F8F4] bg-transparent"
         />
         <input
           type="email"
           placeholder="Tu email"
-          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded bg-transparent placeholder-gray-500"
+          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded text-[#1C2B24] dark:text-[#F9F8F4] placeholder-[#1C2B24] dark:placeholder-[#F9F8F4] bg-transparent"
         />
-        <button
-          className="w-72 px-4 py-2 mt-2 rounded border-2 border-[#1C2B24] dark:border-[#F9F8F4] bg-transparent font-bold transition-all duration-300 hover:bg-[#1C2B24] hover:text-[#F9F8F4] dark:hover:bg-[#F9F8F4] dark:hover:text-[#1C2B24] animate-pulse"
-        >
+        <button className="w-72 px-4 py-2 mt-2 rounded border-2 border-[#1C2B24] dark:border-[#F9F8F4] bg-transparent text-[#1C2B24] dark:text-[#F9F8F4] font-bold hover:bg-[#1C2B24] hover:text-[#F9F8F4] dark:hover:bg-[#F9F8F4] dark:hover:text-[#1C2B24] transition-all duration-300 animate-pulse">
           Quiero recibir novedades
         </button>
       </div>
 
-      <p className="mt-10 text-sm text-center opacity-80 z-10">
+      <div className="mt-10 text-sm text-center text-[#1C2B24] dark:text-[#F9F8F4] opacity-80 relative z-10">
         Las palabras nos encuentran. Pronto, Babel también.
-      </p>
+      </div>
 
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Special+Elite&display=swap');
+
         .font-serif {
-          font-family: 'Georgia', serif;
+          font-family: 'Playfair Display', serif;
         }
       `}</style>
     </div>
