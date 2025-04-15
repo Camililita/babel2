@@ -2,20 +2,14 @@ import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const phrases = [
-    // Español
     "poesía", "gesto", "escritura", "voz", "palabra",
     "ritmo", "susurro", "fragmento", "verso", "imagen",
     "mirada", "ausencia", "latido", "deseo", "eco",
     "presencia", "noche", "tinta", "cuerpo", "memoria",
-    // Inglés
     "poetry", "gesture", "whisper", "body", "voice",
-    // Portugués
     "palavra", "corpo", "noite", "lembrança", "ausência",
-    // Italiano
     "scrittura", "desiderio", "verso", "notte", "voce",
-    // Japonés
     "言葉", "詩", "記憶", "声", "夜",
-    // Chino
     "文字", "诗歌", "身体", "回忆", "夜晚"
   ];
 
@@ -59,7 +53,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F9F8F4] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-1000 dark:bg-[#1C2B24] dark:text-[#F9F8F4]">
+    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FDFCF9] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-1000 dark:bg-[#1C2B24] dark:text-[#F9F8F4]">
       {/* Palabras que caen y se acumulan */}
       {fallingWords.map(({ id, word, top, left, fontSize }) => (
         <span
