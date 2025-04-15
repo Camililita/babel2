@@ -14,14 +14,13 @@ export default function LandingPage() {
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
-  const [frozenGrid, setFrozenGrid] = useState({});
-  const maxHeight = 60;
+  const [frozenWords, setFrozenWords] = useState([]);
 
   useEffect(() => {
     const spawnInterval = setInterval(() => {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
-      const left = Math.floor(Math.random() * 100);
+      const left = Math.floor(Math.random() * window.innerWidth);
       const fontSize = Math.floor(Math.random() * 10 + 12);
       setFallingWords((words) => [
         ...words,
@@ -31,7 +30,7 @@ export default function LandingPage() {
           fontSize,
           top: 0,
           left,
-          speed: Math.random() * 0.4 + 0.3,
+          speed: Math.random() * 1 + 0.5,
           frozen: false
         }
       ]);
@@ -39,41 +38,23 @@ export default function LandingPage() {
 
     const fallInterval = setInterval(() => {
       setFallingWords((words) => {
-        const newGrid = { ...frozenGrid };
-        const updated = words.map((w) => {
-          if (w.frozen) return w;
-          let newTop = w.top + w.speed;
-
-          const gridY = Math.floor(newTop);
-          const gridX = Math.floor(w.left);
-
-          if (gridY >= maxHeight) {
-            let stackHeight = 0;
-            while (newGrid[`${gridX}-${maxHeight - stackHeight}`]) {
-              stackHeight++;
+        return words.map((w) => {
+          if (w.frozen || w.top >= window.innerHeight - 60) {
+            if (!w.frozen) {
+              setFrozenWords((frozen) => [...frozen, { ...w, frozen: true }]);
             }
-            const frozenTop = maxHeight - stackHeight;
-            newGrid[`${gridX}-${frozenTop}`] = true;
-            return { ...w, top: frozenTop, frozen: true };
+            return { ...w, frozen: true };
           }
-
-          if (newGrid[`${gridX}-${gridY}`]) {
-            newGrid[`${gridX}-${gridY - 1}`] = true;
-            return { ...w, top: gridY - 1, frozen: true };
-          }
-
-          return { ...w, top: newTop };
+          return { ...w, top: w.top + w.speed };
         });
-        setFrozenGrid(newGrid);
-        return updated;
       });
-    }, 60);
+    }, 30);
 
     return () => {
       clearInterval(spawnInterval);
       clearInterval(fallInterval);
     };
-  }, [frozenGrid]);
+  }, []);
 
   const handleMouseOver = (id) => {
     setFallingWords((words) =>
@@ -83,14 +64,14 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FAFAF6] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-1000 dark:bg-[#1C2B24] dark:text-[#F9F8F4]">
-      {fallingWords.map(({ id, word, top, left, fontSize }) => (
+      {[...fallingWords, ...frozenWords].map(({ id, word, top, left, fontSize }) => (
         <span
           key={id}
           onMouseOver={() => handleMouseOver(id)}
           style={{
             position: "absolute",
-            top: `${top}%`,
-            left: `${left}%`,
+            top: `${top}px`,
+            left: `${left}px`,
             fontSize: `${fontSize}px`,
             whiteSpace: "nowrap",
             pointerEvents: "auto",
