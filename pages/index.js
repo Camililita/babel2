@@ -15,6 +15,7 @@ export default function LandingPage() {
 
   const [fallingWords, setFallingWords] = useState([]);
   const [frozenGrid, setFrozenGrid] = useState({});
+  const maxHeight = 60;
 
   useEffect(() => {
     const spawnInterval = setInterval(() => {
@@ -34,7 +35,7 @@ export default function LandingPage() {
           frozen: false
         }
       ]);
-    }, 150);
+    }, 100);
 
     const fallInterval = setInterval(() => {
       setFallingWords((words) => {
@@ -43,10 +44,22 @@ export default function LandingPage() {
           if (w.frozen) return w;
           let newTop = w.top + w.speed;
 
-          const key = `${Math.floor(w.left)}-${Math.floor(newTop)}`;
-          if (newTop >= 88 || newGrid[key]) {
-            newGrid[`${Math.floor(w.left)}-${Math.floor(newTop)}`] = true;
-            return { ...w, top: newTop, frozen: true };
+          const gridY = Math.floor(newTop);
+          const gridX = Math.floor(w.left);
+
+          if (gridY >= maxHeight) {
+            let stackHeight = 0;
+            while (newGrid[`${gridX}-${maxHeight - stackHeight}`]) {
+              stackHeight++;
+            }
+            const frozenTop = maxHeight - stackHeight;
+            newGrid[`${gridX}-${frozenTop}`] = true;
+            return { ...w, top: frozenTop, frozen: true };
+          }
+
+          if (newGrid[`${gridX}-${gridY}`]) {
+            newGrid[`${gridX}-${gridY - 1}`] = true;
+            return { ...w, top: gridY - 1, frozen: true };
           }
 
           return { ...w, top: newTop };
