@@ -14,13 +14,14 @@ export default function LandingPage() {
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
+  const [frozenGrid, setFrozenGrid] = useState({});
 
   useEffect(() => {
     const spawnInterval = setInterval(() => {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
-      const left = `${Math.random() * 100}%`;
-      const fontSize = `${Math.random() * 10 + 12}px`;
+      const left = Math.floor(Math.random() * 100);
+      const fontSize = Math.floor(Math.random() * 10 + 12);
       setFallingWords((words) => [
         ...words,
         {
@@ -37,16 +38,20 @@ export default function LandingPage() {
 
     const fallInterval = setInterval(() => {
       setFallingWords((words) => {
+        const newGrid = { ...frozenGrid };
         const updated = words.map((w) => {
           if (w.frozen) return w;
-          const newTop = w.top + w.speed;
-          const maxTop = 90;
-          return {
-            ...w,
-            top: newTop >= maxTop ? maxTop : newTop,
-            frozen: newTop >= maxTop
-          };
+          let newTop = w.top + w.speed;
+
+          const key = `${Math.floor(w.left)}-${Math.floor(newTop)}`;
+          if (newTop >= 88 || newGrid[key]) {
+            newGrid[`${Math.floor(w.left)}-${Math.floor(newTop)}`] = true;
+            return { ...w, top: newTop, frozen: true };
+          }
+
+          return { ...w, top: newTop };
         });
+        setFrozenGrid(newGrid);
         return updated;
       });
     }, 60);
@@ -55,7 +60,7 @@ export default function LandingPage() {
       clearInterval(spawnInterval);
       clearInterval(fallInterval);
     };
-  }, []);
+  }, [frozenGrid]);
 
   const handleMouseOver = (id) => {
     setFallingWords((words) =>
@@ -72,8 +77,8 @@ export default function LandingPage() {
           style={{
             position: "absolute",
             top: `${top}%`,
-            left,
-            fontSize,
+            left: `${left}%`,
+            fontSize: `${fontSize}px`,
             whiteSpace: "nowrap",
             pointerEvents: "auto",
             fontFamily: "'Special Elite', monospace",
