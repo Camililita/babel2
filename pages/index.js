@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export default function LandingPage() {
   const phrases = [
@@ -8,87 +8,80 @@ export default function LandingPage() {
     "presencia", "noche", "tinta", "cuerpo", "memoria",
     "poetry", "gesture", "whisper", "body", "voice",
     "palavra", "corpo", "noite", "lembrança", "ausência",
-    "scrittura", "desiderio", "verso", "notte", "voce",
-    "言葉", "詩", "記憶", "声", "夜", "文字", "诗歌", "身体", "回忆", "夜晚"
+    "scrittura", "desiderio", "notte", "voce",
+    "言葉", "詩", "記憶", "声", "夜",
+    "文字", "詩歌", "身体", "回忆", "夜晚"
   ];
 
-  const [fallingWords, setFallingWords] = useState([]);
-  const [frozenWords, setFrozenWords] = useState([]);
-  const [columnHeights, setColumnHeights] = useState([]);
+  const [words, setWords] = useState([]);
+  const hoveredWords = useRef(new Set());
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const columns = Array(Math.ceil(window.innerWidth / 20)).fill(0);
-    setColumnHeights(columns);
-
     const spawnInterval = setInterval(() => {
-      const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
+      const word = phrases[Math.floor(Math.random() * phrases.length)];
       const left = Math.floor(Math.random() * window.innerWidth);
-      const fontSize = Math.floor(Math.random() * 10 + 12);
-
-      setFallingWords((words) => [
-        ...words,
+      const fontSize = Math.floor(Math.random() * 10 + 14);
+      const speed = Math.random() * 1 + 0.5;
+      setWords((prev) => [
+        ...prev,
         {
           id,
           word,
-          fontSize,
           top: 0,
           left,
-          speed: Math.random() * 1 + 0.5,
-          frozen: false,
+          fontSize,
+          speed,
+          frozen: false
         }
-      ]);
-    }, 100);
+      ].slice(-150));
+    }, 150);
 
     const fallInterval = setInterval(() => {
-      setFallingWords((words) => {
-        return words.map((w) => {
-          if (w.frozen) return w;
-          const nextTop = w.top + w.speed;
-          const col = Math.floor(w.left / 20);
-          const limit = window.innerHeight - columnHeights[col];
+      setWords((prevWords) =>
+        prevWords.map((w) => {
+          if (hoveredWords.current.has(w.id)) {
+            return { ...w, frozen: true };
+          } else if (w.frozen) {
+            return { ...w, frozen: false };
+          }
 
-          if (nextTop >= limit - 20) {
-            const newColumnHeights = [...columnHeights];
-            newColumnHeights[col] += 20;
-            setColumnHeights(newColumnHeights);
-            setFrozenWords((frozen) => [...frozen, { ...w, top: limit - 20, frozen: true }]);
-            return { ...w, top: limit - 20, frozen: true };
+          const nextTop = w.top + w.speed;
+          if (nextTop > window.innerHeight) {
+            return null;
           }
 
           return { ...w, top: nextTop };
-        });
-      });
+        }).filter(Boolean)
+      );
     }, 30);
 
     return () => {
       clearInterval(spawnInterval);
       clearInterval(fallInterval);
     };
-  }, [phrases, columnHeights.length]);
+  }, []);
 
-  const handleMouseOver = (id) => {
-    setFallingWords((words) =>
-      words.map((w) => (w.id === id ? { ...w, frozen: true } : w))
-    );
-  };
+  const handleMouseEnter = (id) => hoveredWords.current.add(id);
+  const handleMouseLeave = (id) => hoveredWords.current.delete(id);
 
   return (
-    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FAFAF6] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-1000 dark:bg-[#1C2B24] dark:text-[#F9F8F4]">
-      {[...fallingWords, ...frozenWords].map(({ id, word, top, left, fontSize }) => (
+    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#F9F9F7] text-[#1C2B24] dark:bg-[#1C2B24] dark:text-[#F9F8F4] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
+      {words.map(({ id, word, top, left, fontSize }) => (
         <span
           key={id}
-          onMouseOver={() => handleMouseOver(id)}
+          onMouseEnter={() => handleMouseEnter(id)}
+          onMouseLeave={() => handleMouseLeave(id)}
           style={{
             position: "absolute",
             top: `${top}px`,
             left: `${left}px`,
             fontSize: `${fontSize}px`,
+            fontFamily: "'Special Elite', monospace",
             whiteSpace: "nowrap",
             pointerEvents: "auto",
-            fontFamily: "'Special Elite', monospace",
             zIndex: 1
           }}
           className="opacity-60 transition duration-300 hover:opacity-100"
@@ -125,7 +118,6 @@ export default function LandingPage() {
 
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Special+Elite&display=swap');
-
         .font-serif {
           font-family: 'Playfair Display', serif;
         }
