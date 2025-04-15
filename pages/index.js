@@ -15,6 +15,7 @@ export default function LandingPage() {
 
   const [fallingWords, setFallingWords] = useState([]);
   const [frozenWords, setFrozenWords] = useState([]);
+  const columnHeights = useState(() => Array(Math.ceil(window.innerWidth / 20)).fill(0))[0];
 
   useEffect(() => {
     const spawnInterval = setInterval(() => {
@@ -39,13 +40,18 @@ export default function LandingPage() {
     const fallInterval = setInterval(() => {
       setFallingWords((words) => {
         return words.map((w) => {
-          if (w.frozen || w.top >= window.innerHeight - 60) {
-            if (!w.frozen) {
-              setFrozenWords((frozen) => [...frozen, { ...w, frozen: true }]);
-            }
-            return { ...w, frozen: true };
+          if (w.frozen) return w;
+          const nextTop = w.top + w.speed;
+          const col = Math.floor(w.left / 20);
+          const limit = window.innerHeight - columnHeights[col];
+
+          if (nextTop >= limit - 20) {
+            columnHeights[col] += 20;
+            setFrozenWords((frozen) => [...frozen, { ...w, top: limit - 20, frozen: true }]);
+            return { ...w, top: limit - 20, frozen: true };
           }
-          return { ...w, top: w.top + w.speed };
+
+          return { ...w, top: nextTop };
         });
       });
     }, 30);
@@ -54,7 +60,7 @@ export default function LandingPage() {
       clearInterval(spawnInterval);
       clearInterval(fallInterval);
     };
-  }, []);
+  }, [columnHeights]);
 
   const handleMouseOver = (id) => {
     setFallingWords((words) =>
