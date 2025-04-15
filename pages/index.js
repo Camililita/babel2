@@ -9,20 +9,25 @@ export default function LandingPage() {
     "poetry", "gesture", "whisper", "body", "voice",
     "palavra", "corpo", "noite", "lembrança", "ausência",
     "scrittura", "desiderio", "verso", "notte", "voce",
-    "言葉", "詩", "記憶", "声", "夜",
-    "文字", "诗歌", "身体", "回忆", "夜晚"
+    "言葉", "詩", "記憶", "声", "夜", "文字", "诗歌", "身体", "回忆", "夜晚"
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
   const [frozenWords, setFrozenWords] = useState([]);
-  const columnHeights = useState(() => Array(Math.ceil(window.innerWidth / 20)).fill(0))[0];
+  const [columnHeights, setColumnHeights] = useState([]);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const columns = Array(Math.ceil(window.innerWidth / 20)).fill(0);
+    setColumnHeights(columns);
+
     const spawnInterval = setInterval(() => {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
       const left = Math.floor(Math.random() * window.innerWidth);
       const fontSize = Math.floor(Math.random() * 10 + 12);
+
       setFallingWords((words) => [
         ...words,
         {
@@ -32,7 +37,7 @@ export default function LandingPage() {
           top: 0,
           left,
           speed: Math.random() * 1 + 0.5,
-          frozen: false
+          frozen: false,
         }
       ]);
     }, 100);
@@ -46,7 +51,9 @@ export default function LandingPage() {
           const limit = window.innerHeight - columnHeights[col];
 
           if (nextTop >= limit - 20) {
-            columnHeights[col] += 20;
+            const newColumnHeights = [...columnHeights];
+            newColumnHeights[col] += 20;
+            setColumnHeights(newColumnHeights);
             setFrozenWords((frozen) => [...frozen, { ...w, top: limit - 20, frozen: true }]);
             return { ...w, top: limit - 20, frozen: true };
           }
@@ -60,7 +67,7 @@ export default function LandingPage() {
       clearInterval(spawnInterval);
       clearInterval(fallInterval);
     };
-  }, [columnHeights]);
+  }, [phrases, columnHeights.length]);
 
   const handleMouseOver = (id) => {
     setFallingWords((words) =>
