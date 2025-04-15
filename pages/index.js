@@ -14,7 +14,6 @@ export default function LandingPage() {
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
-  const [frozenWords, setFrozenWords] = useState([]);
 
   useEffect(() => {
     const spawnInterval = setInterval(() => {
@@ -30,26 +29,26 @@ export default function LandingPage() {
           fontSize,
           top: 0,
           left,
-          speed: Math.random() * 0.3 + 0.2,
+          speed: Math.random() * 0.4 + 0.3,
           frozen: false
         }
       ]);
     }, 150);
 
     const fallInterval = setInterval(() => {
-      setFallingWords((words) =>
-        words.map((w) => {
+      setFallingWords((words) => {
+        const updated = words.map((w) => {
           if (w.frozen) return w;
           const newTop = w.top + w.speed;
-          const baseHeight = 82;
-          const heightFluctuation = Math.abs(Math.sin(parseFloat(w.left) / 10)) * 40;
-          const maxTop = baseHeight - heightFluctuation;
+          const maxTop = 90;
           return {
             ...w,
-            top: newTop >= maxTop ? maxTop : newTop
+            top: newTop >= maxTop ? maxTop : newTop,
+            frozen: newTop >= maxTop
           };
-        })
-      );
+        });
+        return updated;
+      });
     }, 60);
 
     return () => {
