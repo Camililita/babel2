@@ -2,64 +2,85 @@ import { useEffect, useState } from "react";
 
 export default function LandingPage() {
   const phrases = [
-    "poesía", "gesto", "escritura", "voz", "palabra", "ritmo", "susurro", "fragmento", "verso", "imagen",
-    "mirada", "ausencia", "latido", "deseo", "eco", "presencia", "noche", "tinta", "cuerpo", "memoria",
-    "poetry", "gesture", "whisper", "body", "voice", "word", "image", "trace",
+    "poesía", "gesto", "escritura", "voz", "palabra",
+    "ritmo", "susurro", "fragmento", "verso", "imagen",
+    "mirada", "ausencia", "latido", "deseo", "eco",
+    "presencia", "noche", "tinta", "cuerpo", "memoria",
+    "poetry", "gesture", "whisper", "body", "voice",
     "palavra", "corpo", "noite", "lembrança", "ausência",
     "scrittura", "desiderio", "verso", "notte", "voce",
     "言葉", "詩", "記憶", "声", "夜",
-    "文字", "詩歌", "身体", "回忆", "夜晚"
+    "文字", "诗歌", "身体", "回忆", "夜晚"
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
-  const [ground, setGround] = useState([]);
+  const [frozenWords, setFrozenWords] = useState([]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const spawnInterval = setInterval(() => {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const id = Date.now() + Math.random();
       const left = `${Math.random() * 100}%`;
       const fontSize = `${Math.random() * 10 + 12}px`;
       setFallingWords((words) => [
         ...words,
-        { id, word, fontSize, top: 0, left, speed: Math.random() * 0.3 + 0.1 }
+        {
+          id,
+          word,
+          fontSize,
+          top: 0,
+          left,
+          speed: Math.random() * 0.3 + 0.2,
+          frozen: false
+        }
       ]);
     }, 150);
 
     const fallInterval = setInterval(() => {
-      setFallingWords((words) => {
-        return words.map((w) => {
-          const maxTop = 90;
+      setFallingWords((words) =>
+        words.map((w) => {
+          if (w.frozen) return w;
           const newTop = w.top + w.speed;
-          if (newTop >= maxTop) {
-            setGround((g) => [...g, { ...w, top: maxTop }]);
-            return null;
-          }
-          return { ...w, top: newTop };
-        }).filter(Boolean);
-      });
-    }, 50);
+          const baseHeight = 82;
+          const heightFluctuation = Math.abs(Math.sin(parseFloat(w.left) / 10)) * 40;
+          const maxTop = baseHeight - heightFluctuation;
+          return {
+            ...w,
+            top: newTop >= maxTop ? maxTop : newTop
+          };
+        })
+      );
+    }, 60);
 
     return () => {
-      clearInterval(interval);
+      clearInterval(spawnInterval);
       clearInterval(fallInterval);
     };
   }, []);
 
+  const handleMouseOver = (id) => {
+    setFallingWords((words) =>
+      words.map((w) => (w.id === id ? { ...w, frozen: true } : w))
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FAFAF6] text-[#1C2B24] dark:bg-[#1C2B24] dark:text-[#F9F8F4] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
-      {[...fallingWords, ...ground].map(({ id, word, top, left, fontSize }) => (
+    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FAFAF6] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-1000 dark:bg-[#1C2B24] dark:text-[#F9F8F4]">
+      {fallingWords.map(({ id, word, top, left, fontSize }) => (
         <span
           key={id}
+          onMouseOver={() => handleMouseOver(id)}
           style={{
             position: "absolute",
             top: `${top}%`,
             left,
             fontSize,
             whiteSpace: "nowrap",
-            fontFamily: "'Special Elite', monospace"
+            pointerEvents: "auto",
+            fontFamily: "'Special Elite', monospace",
+            zIndex: 1
           }}
-          className="opacity-60 hover:opacity-100 transition duration-300"
+          className="opacity-60 transition duration-300 hover:opacity-100"
         >
           {word}
         </span>
