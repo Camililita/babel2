@@ -9,8 +9,7 @@ export default function LandingPage() {
     "poetry", "gesture", "whisper", "body", "voice",
     "palavra", "corpo", "noite", "lembrança", "ausência",
     "scrittura", "desiderio", "verso", "notte", "voce",
-    "言葉", "詩", "記憶", "声", "夜",
-    "文字", "诗歌", "身体", "回忆", "夜晚"
+    "言葉", "詩", "記憶", "声", "夜", "文字", "诗歌", "身体", "回忆", "夜晚"
   ];
 
   const [fallingWords, setFallingWords] = useState([]);
@@ -32,15 +31,16 @@ export default function LandingPage() {
           speed: Math.random() * 0.3 + 0.1,
         }
       ]);
-    }, 200);
+    }, 250);
 
     const fallInterval = setInterval(() => {
       setFallingWords((words) =>
         words.map((w) => {
           const newTop = w.top + w.speed;
+          const stopHeight = 80 + Math.sin(parseFloat(w.left) / 5) * 10;
           return {
             ...w,
-            top: newTop > 85 ? 85 - Math.random() * 20 : newTop,
+            top: newTop >= stopHeight ? stopHeight : newTop
           };
         })
       );
@@ -53,8 +53,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FDFCF9] text-[#1C2B24] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden transition-colors duration-1000 dark:bg-[#1C2B24] dark:text-[#F9F8F4]">
-      {/* Palabras que caen y se acumulan */}
+    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#FAFAF6] dark:bg-[#1C1C1C] text-[#1C2B24] dark:text-[#F9F8F4] transition-colors duration-1000 flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden font-sans">
       {fallingWords.map(({ id, word, top, left, fontSize }) => (
         <span
           key={id}
@@ -67,43 +66,45 @@ export default function LandingPage() {
             pointerEvents: "none",
             fontFamily: "'Special Elite', monospace",
           }}
-          className="opacity-50 transition duration-300 hover:opacity-90"
+          className="opacity-60 transition duration-300 hover:opacity-100"
         >
           {word}
         </span>
       ))}
 
-      <h1 className="text-5xl font-bold text-center mb-4 font-serif relative z-10">Babel</h1>
+      <h1 className="text-6xl font-bold mb-4 font-serif z-10">Babel</h1>
 
-      <p className="text-center text-base max-w-md mb-6 relative z-10">
-        Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
+      <p className="text-center text-lg max-w-xl mb-6 z-10">
+        Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real.
+        Leé desde el misterio, escribí desde el gesto.
       </p>
 
-      <div className="flex flex-col gap-3 items-center relative z-10">
+      <div className="flex flex-col gap-3 items-center z-10">
         <input
           type="text"
           placeholder="Tu nombre (opcional)"
-          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded text-[#1C2B24] dark:text-[#F9F8F4] placeholder-[#1C2B24] dark:placeholder-[#F9F8F4] bg-transparent"
+          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded bg-transparent placeholder-gray-500"
         />
         <input
           type="email"
           placeholder="Tu email"
-          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded text-[#1C2B24] dark:text-[#F9F8F4] placeholder-[#1C2B24] dark:placeholder-[#F9F8F4] bg-transparent"
+          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded bg-transparent placeholder-gray-500"
         />
-        <button className="w-72 px-4 py-2 mt-2 rounded bg-[#1C2B24] dark:bg-[#F9F8F4] text-[#F9F8F4] dark:text-[#1C2B24] font-bold hover:scale-105 transform transition-all">
+        <button
+          className="w-72 px-4 py-2 mt-2 rounded border-2 border-[#1C2B24] dark:border-[#F9F8F4] bg-transparent font-bold transition-all duration-300 hover:bg-[#1C2B24] hover:text-[#F9F8F4] dark:hover:bg-[#F9F8F4] dark:hover:text-[#1C2B24] animate-pulse"
+        >
           Quiero recibir novedades
         </button>
       </div>
 
-      <div className="mt-10 text-sm text-center text-[#1C2B24] dark:text-[#F9F8F4] opacity-80 relative z-10">
+      <p className="mt-10 text-sm text-center opacity-80 z-10">
         Las palabras nos encuentran. Pronto, Babel también.
-      </div>
+      </p>
 
       <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Special+Elite&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
         .font-serif {
-          font-family: 'Playfair Display', serif;
+          font-family: 'Georgia', serif;
         }
       `}</style>
     </div>
