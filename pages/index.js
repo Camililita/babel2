@@ -25,8 +25,9 @@ export default function LandingPage() {
       const left = Math.floor(Math.random() * window.innerWidth);
       const fontSize = Math.floor(Math.random() * 10 + 14);
       const speed = Math.random() * 1 + 0.5;
+
       setWords((prev) => [
-        ...prev,
+        ...prev.filter(w => w.top < window.innerHeight), // eliminar los que ya salieron de pantalla
         {
           id,
           word,
@@ -36,26 +37,20 @@ export default function LandingPage() {
           speed,
           frozen: false
         }
-      ].slice(-150));
+      ]);
     }, 150);
 
     const fallInterval = setInterval(() => {
-      setWords((prevWords) =>
-        prevWords.map((w) => {
+      setWords((prevWords) => {
+        return prevWords.map((w) => {
           if (hoveredWords.current.has(w.id)) {
             return { ...w, frozen: true };
           } else if (w.frozen) {
             return { ...w, frozen: false };
           }
-
-          const nextTop = w.top + w.speed;
-          if (nextTop > window.innerHeight) {
-            return null;
-          }
-
-          return { ...w, top: nextTop };
-        }).filter(Boolean)
-      );
+          return { ...w, top: w.top + w.speed };
+        });
+      });
     }, 30);
 
     return () => {
