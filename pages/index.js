@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function LandingPage() {
   const phrases = [
@@ -14,7 +14,6 @@ export default function LandingPage() {
   ];
 
   const [words, setWords] = useState([]);
-  const frozenRefs = useRef({});
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -25,7 +24,7 @@ export default function LandingPage() {
       const word = phrases[Math.floor(Math.random() * phrases.length)];
       const left = Math.floor(Math.random() * window.innerWidth);
       const fontSize = Math.floor(Math.random() * 10 + 14);
-      const speed = Math.random() * 0.5 + 0.5;
+      const speed = Math.random() * 1 + 0.5;
 
       setWords((prev) => [
         ...prev,
@@ -36,37 +35,30 @@ export default function LandingPage() {
           left,
           fontSize,
           speed,
-          vy: speed,
+          direction: 1
         }
       ].slice(-100));
-    }, 300);
+    }, 150);
 
     const fallInterval = setInterval(() => {
       setWords((prevWords) => {
         return prevWords.map((w) => {
-          const elementsToCheck = [
-            ...document.querySelectorAll("#babelTitle, #subtitle, input, button")
-          ];
+          const wordEl = document.getElementById(`word-${w.id}`);
+          const collision = checkCollision(wordEl);
+          let newDirection = w.direction;
+          let newTop = w.top + w.speed * w.direction;
 
-          let collided = false;
-          for (let el of elementsToCheck) {
-            const rect = el.getBoundingClientRect();
-            if (
-              w.left >= rect.left &&
-              w.left <= rect.right &&
-              w.top + w.fontSize >= rect.top &&
-              w.top <= rect.bottom
-            ) {
-              collided = true;
-              break;
-            }
+          if (collision && w.direction > 0) {
+            newDirection = -1;
+          } else if (!collision && w.direction < 0) {
+            newDirection = 1;
           }
 
-          if (collided) {
-            return { ...w, vy: -w.vy * 0.6, top: w.top + w.vy };
-          } else {
-            return { ...w, vy: w.vy + 0.2, top: w.top + w.vy };
-          }
+          return {
+            ...w,
+            top: newTop,
+            direction: newDirection
+          };
         });
       });
     }, 30);
@@ -77,14 +69,28 @@ export default function LandingPage() {
     };
   }, []);
 
+  const checkCollision = (el) => {
+    if (!el) return false;
+    const elRect = el.getBoundingClientRect();
+    const staticEls = document.querySelectorAll(".static-zone");
+    return Array.from(staticEls).some(staticEl => {
+      const rect = staticEl.getBoundingClientRect();
+      return elRect.bottom >= rect.top &&
+             elRect.top <= rect.bottom &&
+             elRect.left <= rect.right &&
+             elRect.right >= rect.left;
+    });
+  };
+
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-[#fefdf8] text-[#1C2B24] flex flex-col items-center justify-center relative overflow-hidden font-lora"
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden bg-[#F9F9F7] text-[#1C2B24] font-lora"
     >
       {words.map(({ id, word, top, left, fontSize }) => (
         <span
           key={id}
+          id={`word-${id}`}
           style={{
             position: "absolute",
             top: `${top}px`,
@@ -101,57 +107,43 @@ export default function LandingPage() {
         </span>
       ))}
 
-      <h1
-        id="babelTitle"
-        className="text-5xl mb-2 z-10"
-        style={{ fontFamily: "'Rough Typewriter', monospace" }}
-      >
-        Babel
-      </h1>
-
-      <p
-        id="subtitle"
-        className="text-sm mb-6 max-w-sm text-center z-10"
-        style={{ fontFamily: "'South Belgian Italic', serif" }}
-      >
-        by Algobvio
-      </p>
+      <h1 className="text-5xl static-zone text-center font-typewriter mb-2 z-10">Babel</h1>
+      <h2 className="text-lg static-zone mb-6 font-italic z-10">by Algobvio</h2>
 
       <input
+        type="text"
         placeholder="Usuario"
-        className="w-72 px-4 py-2 border border-[#1C2B24] rounded mb-2 bg-transparent z-10"
-        style={{ fontFamily: "Lora, serif" }}
+        className="static-zone w-72 px-4 py-2 mb-2 border border-[#1C2B24] rounded bg-transparent placeholder-[#1C2B24] text-[#1C2B24]"
       />
       <input
-        placeholder="Contraseña"
         type="password"
-        className="w-72 px-4 py-2 border border-[#1C2B24] rounded mb-2 bg-transparent z-10"
-        style={{ fontFamily: "Lora, serif" }}
+        placeholder="Contraseña"
+        className="static-zone w-72 px-4 py-2 mb-2 border border-[#1C2B24] rounded bg-transparent placeholder-[#1C2B24] text-[#1C2B24]"
       />
-      <button
-        className="w-72 px-4 py-2 border-2 border-[#1C2B24] rounded bg-transparent text-[#1C2B24] font-bold mb-2 z-10"
-        style={{ fontFamily: "Lora, serif" }}
-      >
+      <button className="static-zone w-72 px-4 py-2 mb-2 rounded border-2 border-[#1C2B24] bg-transparent text-[#1C2B24] font-bold">
         Iniciar Sesión
       </button>
-      <button
-        className="text-sm underline text-[#1C2B24] z-10"
-        style={{ fontFamily: "Lora, serif" }}
-      >
-        Crear cuenta
-      </button>
+      <a href="#" className="static-zone text-sm text-[#1C2B24] underline mb-6">Crear cuenta</a>
 
-      <p
-        className="mt-8 text-center text-xs text-[#1C2B24] max-w-xs z-10"
-        style={{ fontFamily: "Lora, serif" }}
-      >
+      <p className="text-center text-sm max-w-sm text-[#1C2B24] z-10 static-zone">
         Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
       </p>
 
       <style jsx>{`
         @import url('https://fonts.googleapis.com/css2?family=Lora&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Rough+Typewriter&display=swap');
-        @import url('https://fonts.cdnfonts.com/css/south-belgian');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+
+        .font-lora {
+          font-family: 'Lora', serif;
+        }
+        .font-italic {
+          font-family: 'Playfair Display', serif;
+          font-style: italic;
+        }
+        .font-typewriter {
+          font-family: 'Special Elite', monospace;
+        }
       `}</style>
     </div>
   );
