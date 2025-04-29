@@ -1,120 +1,99 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export default function LandingPage() {
-  const phrases = [
-    "poesía", "gesto", "escritura", "voz", "palabra",
-    "ritmo", "susurro", "fragmento", "verso", "imagen",
-    "mirada", "ausencia", "latido", "deseo", "eco",
-    "presencia", "noche", "tinta", "cuerpo", "memoria",
-    "poetry", "gesture", "whisper", "body", "voice",
-    "palavra", "corpo", "noite", "lembrança", "ausência",
-    "scrittura", "desiderio", "notte", "voce",
-    "言葉", "詩", "記憶", "声", "夜",
-    "文字", "詩歌", "身体", "回忆", "夜晚"
-  ];
+export default function LoginPage() {
+  const containerRef = useRef(null);
+  const [floatingWords, setFloatingWords] = useState([]);
 
-  const [words, setWords] = useState([]);
-  const hoveredWords = useRef(new Set());
+  const words = ["between", "dade", "hope", "hiraeth", "流年"];
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const spawnInterval = setInterval(() => {
+    const interval = setInterval(() => {
       const id = Date.now() + Math.random();
-      const word = phrases[Math.floor(Math.random() * phrases.length)];
-      const left = Math.floor(Math.random() * window.innerWidth);
-      const fontSize = Math.floor(Math.random() * 10 + 14);
-      const speed = Math.random() * 1 + 0.5;
+      const word = words[Math.floor(Math.random() * words.length)];
+      const left = Math.random() * (window.innerWidth - 100);
+      const fontSize = 12 + Math.random() * 8;
+      const speed = 0.5 + Math.random();
 
-      setWords((prev) => [
-        ...prev.filter(w => w.top < window.innerHeight), // eliminar los que ya salieron de pantalla
-        {
-          id,
-          word,
-          top: 0,
-          left,
-          fontSize,
-          speed,
-          frozen: false
-        }
-      ]);
-    }, 150);
+      setFloatingWords((prev) => [
+        ...prev,
+        { id, word, top: -20, left, speed, fontSize, vy: speed }
+      ].slice(-50));
+    }, 600);
 
     const fallInterval = setInterval(() => {
-      setWords((prevWords) => {
-        return prevWords.map((w) => {
-          if (hoveredWords.current.has(w.id)) {
-            return { ...w, frozen: true };
-          } else if (w.frozen) {
-            return { ...w, frozen: false };
-          }
-          return { ...w, top: w.top + w.speed };
-        });
-      });
+      setFloatingWords((prev) =>
+        prev.map((w) => {
+          const collisionZones = document.querySelectorAll(".collision-zone");
+          let collided = false;
+
+          collisionZones.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            if (
+              w.left + 30 > rect.left &&
+              w.left < rect.right &&
+              w.top + 15 > rect.top &&
+              w.top + 15 < rect.bottom
+            ) {
+              collided = true;
+            }
+          });
+
+          return collided
+            ? { ...w, vy: -w.vy * 0.6, top: w.top + w.vy }
+            : { ...w, vy: Math.min(w.vy + 0.2, 3), top: w.top + w.vy };
+        })
+      );
     }, 30);
 
     return () => {
-      clearInterval(spawnInterval);
+      clearInterval(interval);
       clearInterval(fallInterval);
     };
   }, []);
 
-  const handleMouseEnter = (id) => hoveredWords.current.add(id);
-  const handleMouseLeave = (id) => hoveredWords.current.delete(id);
-
   return (
-    <div className="min-h-screen bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')] bg-[#F9F9F7] text-[#1C2B24] dark:bg-[#1C2B24] dark:text-[#F9F8F4] flex flex-col items-center justify-center px-6 py-12 relative overflow-hidden">
-      {words.map(({ id, word, top, left, fontSize }) => (
+    <div ref={containerRef} className="relative w-full h-screen bg-[#F9F9F7] text-[#1C2B24] overflow-hidden font-mono">
+      {/* Floating Words */}
+      {floatingWords.map(({ id, word, top, left, fontSize }) => (
         <span
           key={id}
-          onMouseEnter={() => handleMouseEnter(id)}
-          onMouseLeave={() => handleMouseLeave(id)}
-          style={{
-            position: "absolute",
-            top: `${top}px`,
-            left: `${left}px`,
-            fontSize: `${fontSize}px`,
-            fontFamily: "'Special Elite', monospace",
-            whiteSpace: "nowrap",
-            pointerEvents: "auto",
-            zIndex: 1
-          }}
-          className="opacity-60 transition duration-300 hover:opacity-100"
+          style={{ top, left, fontSize }}
+          className="absolute text-gray-400 opacity-70 pointer-events-none"
         >
           {word}
         </span>
       ))}
 
-      <h1 className="text-5xl font-bold text-center mb-4 font-serif relative z-10">Babel</h1>
+      {/* Main Login UI */}
+      <div className="absolute top-1/4 w-full flex flex-col items-center gap-2 px-4">
+        <h1 className="text-5xl font-serif font-bold collision-zone">Babel</h1>
+        <p className="text-sm collision-zone">by Algobvio</p>
 
-      <p className="text-center text-base max-w-md mb-6 relative z-10">
-        Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
-      </p>
-
-      <div className="flex flex-col gap-3 items-center relative z-10">
         <input
           type="text"
-          placeholder="Tu nombre (opcional)"
-          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded text-[#1C2B24] dark:text-[#F9F8F4] placeholder-[#1C2B24] dark:placeholder-[#F9F8F4] bg-transparent"
+          placeholder="Usuario"
+          className="collision-zone w-64 mt-4 p-2 border border-[#1C2B24] bg-transparent placeholder-[#1C2B24] rounded"
         />
         <input
-          type="email"
-          placeholder="Tu email"
-          className="w-72 px-4 py-2 border border-[#1C2B24] dark:border-[#F9F8F4] rounded text-[#1C2B24] dark:text-[#F9F8F4] placeholder-[#1C2B24] dark:placeholder-[#F9F8F4] bg-transparent"
+          type="password"
+          placeholder="Contraseña"
+          className="collision-zone w-64 p-2 border border-[#1C2B24] bg-transparent placeholder-[#1C2B24] rounded"
         />
-        <button className="w-72 px-4 py-2 mt-2 rounded border-2 border-[#1C2B24] dark:border-[#F9F8F4] bg-transparent text-[#1C2B24] dark:text-[#F9F8F4] font-bold hover:bg-[#1C2B24] hover:text-[#F9F8F4] dark:hover:bg-[#F9F8F4] dark:hover:text-[#1C2B24] transition-all duration-300 animate-pulse">
-          Quiero recibir novedades
+
+        <button className="collision-zone mt-2 px-6 py-2 bg-[#1C2B24] text-white rounded hover:opacity-80 transition">
+          Iniciar Sesión
         </button>
+        <a href="#" className="text-sm underline mt-1">Crear cuenta</a>
+
+        <p className="text-center text-xs mt-6 max-w-sm">
+          Subí tus poemas, escribí en colaboración y participá en concursos trimestrales sin mostrar tu nombre real. Leé desde el misterio, escribí desde el gesto.
+        </p>
       </div>
 
-      <div className="mt-10 text-sm text-center text-[#1C2B24] dark:text-[#F9F8F4] opacity-80 relative z-10">
-        Las palabras nos encuentran. Pronto, Babel también.
-      </div>
-
-      <style jsx>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Special+Elite&display=swap');
-        .font-serif {
-          font-family: 'Playfair Display', serif;
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&display=swap');
+        body {
+          font-family: 'Special Elite', monospace;
         }
       `}</style>
     </div>
